@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>finally</title>
+    <link rel="icon" href="nerv.png" type="image/png">
+    <style>
+        /* Add your styles here */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+        .context-menu-item {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .context-menu-item:hover {
+            background-color: #eee;
+        }
+        #tabImage {
+    width: 300px; /* This sets the width to 300 pixels */
+    display: block;
+    margin: 20px auto;
+}
+    </style>
+</head>
+<body>
+    <h2>todo</h2>
+    <ul id="todoList">
+        <!-- Items will be added here -->
+    </ul>
+    <input type="text" id="newTodo" placeholder="New task...">
+    <button id="addTodo">Add</button>
+
+    <img id="tabImage" src="" alt="New Tab Image" style="max-width: 100%; display: block; margin: 20px auto;">
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" id="editItem">Edit</div>
+        <div class="context-menu-item" id="deleteItem">Delete</div>
+    </div>
+
+    <script src="newtab.js"></script>
+</body>
+</html>

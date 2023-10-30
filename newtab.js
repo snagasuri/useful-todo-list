@@ -191,5 +191,67 @@ function loadImage() {
     });
 }
 
+let currentMonth = new Date();
+
+function populateCalendar(month) {
+    const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
+    const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+
+    const monthDays = document.getElementById('monthDays');
+    const currentMonthDiv = document.getElementById('currentMonth');
+
+    // Clear existing entries:
+    monthDays.innerHTML = '';
+
+    // Populate month name:
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+    currentMonthDiv.innerText = `${monthNames[month.getMonth()]} ${month.getFullYear()}`;
+
+    // Get start day of the month:
+    let day = firstDay.getDay();
+
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const daysHeaderRow = document.createElement('tr');
+    daysOfWeek.forEach(day => {
+        const dayHeader = document.createElement('th');
+        dayHeader.innerText = day;
+        daysHeaderRow.appendChild(dayHeader);
+    });
+    monthDays.appendChild(daysHeaderRow);
+    
+    // Generate days:
+    let weekRow = document.createElement('tr');
+    for (let i = 0; i < day; i++) {  // Fill in the blanks before the first day
+        weekRow.appendChild(document.createElement('td'));
+    }
+
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+        if (day % 7 === 0 && day !== 0) {
+            monthDays.appendChild(weekRow);
+            weekRow = document.createElement('tr');
+        }
+
+        const dayCell = document.createElement('td');
+        dayCell.innerText = i;
+        weekRow.appendChild(dayCell);
+
+        day++;
+    }
+
+    monthDays.appendChild(weekRow);  // Append the last week
+}
+
+document.getElementById('prevMonth').addEventListener('click', function() {
+    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+    populateCalendar(currentMonth);
+});
+
+document.getElementById('nextMonth').addEventListener('click', function() {
+    currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+    populateCalendar(currentMonth);
+});
+
+populateCalendar(currentMonth);
 loadTodos();
 loadImage();

@@ -89,11 +89,11 @@ function saveTodos() {
         var checked = item.querySelector('input').checked;
         todos.push({ text: text, checked: checked });
     }
-    chrome.storage.local.set({ todos: todos });
+    chrome.storage.sync.set({ todos: todos });
 }
 
 function loadTodos() {
-    chrome.storage.local.get('todos', function(data) {
+    chrome.storage.sync.get('todos', function(data) {
         var todos = data.todos || [];
         for (var i = 0; i < todos.length; i++) {
             addItem(todos[i].text, todos[i].checked);
@@ -250,6 +250,15 @@ document.getElementById('prevMonth').addEventListener('click', function() {
 document.getElementById('nextMonth').addEventListener('click', function() {
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
     populateCalendar(currentMonth);
+});
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    if (namespace === "sync" && changes.todos) {
+        // Clear existing items
+        document.getElementById('todoList').innerHTML = '';
+        // Load updated items
+        loadTodos();
+    }
 });
 
 populateCalendar(currentMonth);

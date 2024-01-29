@@ -89,11 +89,17 @@ function saveTodos() {
         var checked = item.querySelector('input').checked;
         todos.push({ text: text, checked: checked });
     }
-    chrome.storage.sync.set({ todos: todos });
+    chrome.storage.local.set({ todos: todos });
+
+    chrome.storage.local.set({ todos: todos }, function() {
+        if (chrome.runtime.lastError) {
+            console.error("Error saving todos:", chrome.runtime.lastError.message);
+        }
+    });
 }
 
 function loadTodos() {
-    chrome.storage.sync.get('todos', function(data) {
+    chrome.storage.local.get('todos', function(data) {
         var todos = data.todos || [];
         for (var i = 0; i < todos.length; i++) {
             addItem(todos[i].text, todos[i].checked);
@@ -242,6 +248,32 @@ function populateCalendar(month) {
     monthDays.appendChild(weekRow);  // Append the last week
 }
 
+function fetchNBAGames() {
+    // Get today's date in the user's local time zone
+    const today = new Date();
+    // Adjust for time zone (example: subtract 4 hours for Eastern Daylight Time)
+    today.setHours(today.getHours() - 4); // Adjust this value based on your time zone
+    // Format the date in YYYY-MM-DD format for the API request
+    const formattedDate = today.toISOString().split('T')[0];
+    
+    fetch(`https://www.balldontlie.io/api/v1/games?start_date=${formattedDate}&end_date=${formattedDate}`)
+        .then(response => response.json())
+        .then(data => displayNBAGames(data.data))
+        .catch(error => console.error('Error fetching NBA games:', error));
+}
+
+
+function displayNBAGames(games) {
+    const gamesList = document.getElementById('nbaGamesList');
+    gamesList.innerHTML = ''; // Clear previous entries
+    games.forEach(game => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${game.home_team.full_name} vs ${game.visitor_team.full_name} - ${game.status}`;
+        gamesList.appendChild(listItem);
+    });
+}
+
+
 document.getElementById('prevMonth').addEventListener('click', function() {
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
     populateCalendar(currentMonth);
@@ -252,14 +284,12 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     populateCalendar(currentMonth);
 });
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if (namespace === "sync" && changes.todos) {
-        // Clear existing items
-        document.getElementById('todoList').innerHTML = '';
-        // Load updated items
-        loadTodos();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    fetchNBAGames();
+    // ...other initialization code
 });
+
+
 
 populateCalendar(currentMonth);
 loadTodos();

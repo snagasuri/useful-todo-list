@@ -266,12 +266,53 @@ function fetchNBAGames() {
 function displayNBAGames(games) {
     const gamesList = document.getElementById('nbaGamesList');
     gamesList.innerHTML = ''; // Clear previous entries
+
     games.forEach(game => {
         const listItem = document.createElement('li');
-        listItem.textContent = `${game.home_team.full_name} vs ${game.visitor_team.full_name} - ${game.status}`;
+        listItem.className = 'game-item'; // Add a class for styling
+        
+        const homeTeamSpan = document.createElement('span');
+        homeTeamSpan.className = 'team home-team';
+        const homeTeam = game.home_team.full_name.split(' ').pop(); // Simplifying team name
+        homeTeamSpan.textContent = homeTeam;
+
+        const vsSpan = document.createElement('span');
+        vsSpan.textContent = 'vs.';
+        vsSpan.className = 'vs-text'; // Add a class for styling
+
+        const visitorTeamSpan = document.createElement('span');
+        visitorTeamSpan.className = 'team visitor-team';
+        const visitorTeam = game.visitor_team.full_name.split(' ').pop(); // Simplifying team name
+        visitorTeamSpan.textContent = visitorTeam;
+
+        // Append the spans to the list item
+        listItem.appendChild(homeTeamSpan);
+        listItem.appendChild(vsSpan);
+        listItem.appendChild(visitorTeamSpan);
+
+        // Check if the game is live and update status accordingly
+        let gameStatus = ''; // Default to empty string
+        if (game.status === 'Scheduled') {
+            // For scheduled games, don't display any status
+        } else if (game.status.includes('Quarter')) {
+            // If the status includes 'Quarter', extract it
+            gameStatus = ` - ${game.status}`;
+        }
+        
+        // Create a span for the game status if it's live
+        if (gameStatus !== '') {
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'game-status';
+            statusSpan.textContent = gameStatus;
+            listItem.appendChild(statusSpan);
+        }
+
         gamesList.appendChild(listItem);
     });
 }
+
+
+
 
 
 document.getElementById('prevMonth').addEventListener('click', function() {
@@ -285,9 +326,11 @@ document.getElementById('nextMonth').addEventListener('click', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    fetchNBAGames();
+    fetchNBAGames(); // Initial call to fetch games
+    setInterval(fetchNBAGames, 300000); // Fetch games every 5 minutes (300000 milliseconds)
     // ...other initialization code
 });
+
 
 
 

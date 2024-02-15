@@ -88,18 +88,44 @@
         }
 
         #gamesContainer {
-            text-align: center; /* Center-align the container contents */
-            margin-bottom: 20px; /* Add space between the games list and the image */
-            margin-top: -200px;
-        }
+    text-align: center; /* Center-align the container contents */
+    margin-bottom: 20px; /* Add space between the games list and the image */
+    margin-top: -250px; /* Move the games list up; adjust this value as needed */
+}
 
-        #nbaGamesList {
-            display: inline-block; /* Allows the list to be centered in the container */
-            text-align: left; /* Aligns the text inside the list to the left */
-            list-style-type: none;
-            padding: 0;
-            margin: 0; /* Removes default margin */
-        }
+
+#nbaGamesList {
+    padding: 0;
+    list-style-type: none;
+    width: 100%; /* Set a specific width for the list */
+    max-width: 400px; /* Maximum width of the list, adjust as needed */
+    margin: auto; /* This will center the entire list in the gamesContainer */
+}
+
+.game-item {
+    display: flex;
+    justify-content: space-between; /* This will align items as requested */
+    align-items: center;
+    margin-bottom: 1px; /* Adjust as needed */
+}
+
+.team {
+    flex: 1; /* This allows both team names to take up equal space on both sides */
+    text-align: right; /* Right align the home team */
+}
+
+.team.visitor-team {
+    text-align: left; /* Left align the visitor team */
+}
+
+.vs-text {
+    flex: none; /* The "vs." text should not grow or shrink */
+    padding: 0 10px; /* Adds space around the "vs." text */
+    text-align: center; /* Center the "vs." text */
+    font-weight: bold;
+}
+
+
     </style>
     
 </head>

@@ -1,0 +1,17 @@
+{
+  "name": "useful-todo-list",
+  "version": "1.0.0",
+  "description": "stateful todo-list chrome extension that lives in the newtab.\r features include:\r - crud for each item\r - drag and drop for reorganization\r - cool anime pictures.",
+  "main": "newtab.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.1",
+    "node-fetch": "^3.3.2"
+  }
+}

@@ -249,18 +249,14 @@ function populateCalendar(month) {
 }
 
 function fetchNBAGames() {
-    // Get today's date in the user's local time zone
-    const today = new Date();
-    // Adjust for time zone (example: subtract 4 hours for Eastern Daylight Time)
-    today.setHours(today.getHours() - 4); // Adjust this value based on your time zone
-    // Format the date in YYYY-MM-DD format for the API request
-    const formattedDate = today.toISOString().split('T')[0];
-    
-    fetch(`https://www.balldontlie.io/api/v1/games?start_date=${formattedDate}&end_date=${formattedDate}`)
-        .then(response => response.json())
-        .then(data => displayNBAGames(data.data))
-        .catch(error => console.error('Error fetching NBA games:', error));
-}
+    const herokuServerUrl = 'https://fierce-escarpment-71041-2ca398b438bb.herokuapp.com/';
+  
+    fetch(herokuServerUrl)
+      .then(response => response.json())
+      .then(data => displayNBAGames(data.data))
+      .catch(error => console.error('Error fetching NBA games:', error));
+  }
+
 
 
 function displayNBAGames(games) {
@@ -328,7 +324,6 @@ document.getElementById('nextMonth').addEventListener('click', function() {
 document.addEventListener('DOMContentLoaded', function() {
     fetchNBAGames(); // Initial call to fetch games
     setInterval(fetchNBAGames, 300000); // Fetch games every 5 minutes (300000 milliseconds)
-    // ...other initialization code
 });
 
 

@@ -249,7 +249,7 @@ function populateCalendar(month) {
 }
 
 function fetchNBAGames() {
-    const herokuServerUrl = 'https://fierce-escarpment-71041-2ca398b438bb.herokuapp.com/';
+    const herokuServerUrl = 'https://tranquil-woodland-32815-0cb6fc0e7a3b.herokuapp.com/';
   
     fetch(herokuServerUrl)
       .then(response => response.json())

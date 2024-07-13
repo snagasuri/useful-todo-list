@@ -1,37 +1,15 @@
 var images = [
-    'CATCH_A.png',
-    'SUB01E.png',
-    'SUB02E.png',
-    'SUB03E.png',
-    'SUB04E.png',
-    'SUB05E.png',
-    'SUB06E.png',
-    'SUB07E.png',
-    'SUB08E.png',
-    'SUB09E.png',
-    'SUB10E.png',
-    'SUB11E.png',
-    'SUB12E.png',
-    'SUB13E.png',
-    'SUB14E.png',
-    'SUB15E.png',
-    'SUB16E.png',
-    'SUB17E.png',
-    'SUB18E.png',
-    'SUB19E.png',
-    'SUB20E.png',
-    'SUB21E.png',
-    'SUB22E.png',
-    'SUB23E.png',
-    'SUB24EB.png',
-    'SUB25E.png',
-    'SUB26E.png',
-    't.png'
+    'CATCH_A.png', 'SUB01E.png', 'SUB02E.png', 'SUB03E.png', 'SUB04E.png',
+    'SUB05E.png', 'SUB06E.png', 'SUB07E.png', 'SUB08E.png', 'SUB09E.png',
+    'SUB10E.png', 'SUB11E.png', 'SUB12E.png', 'SUB13E.png', 'SUB14E.png',
+    'SUB15E.png', 'SUB16E.png', 'SUB17E.png', 'SUB18E.png', 'SUB19E.png',
+    'SUB20E.png', 'SUB21E.png', 'SUB22E.png', 'SUB23E.png', 'SUB24EB.png',
+    'SUB25E.png', 'SUB26E.png', 't.png'
 ];
 
 document.getElementById('addTodo').addEventListener('click', addNewItem);
 document.getElementById('newTodo').addEventListener('keypress', function(e) {
-    if (e.keyCode === 13) {  // 13 is the keyCode for Enter key
+    if (e.keyCode === 13) {
         addNewItem();
     }
 });
@@ -63,7 +41,6 @@ function addItem(text, checked) {
     item.appendChild(textSpan);
     list.appendChild(item);
 
-    // Make the item draggable
     item.setAttribute('draggable', true);
     item.addEventListener('dragstart', handleDragStart, false);
     item.addEventListener('dragover', handleDragOver, false);
@@ -89,8 +66,6 @@ function saveTodos() {
         var checked = item.querySelector('input').checked;
         todos.push({ text: text, checked: checked });
     }
-    chrome.storage.local.set({ todos: todos });
-
     chrome.storage.local.set({ todos: todos }, function() {
         if (chrome.runtime.lastError) {
             console.error("Error saving todos:", chrome.runtime.lastError.message);
@@ -107,25 +82,22 @@ function loadTodos() {
     });
 }
 
-// Drag and Drop Functions
 let draggedItem = null;
 
 function handleDragStart(e) {
     draggedItem = this;
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', ''); // required for Firefox
+    e.dataTransfer.setData('text/plain', '');
 }
 
 function handleDragOver(e) {
-    if (draggedItem === this) return; // if the item is dragged over itself, do nothing
-
+    if (draggedItem === this) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
 }
 
 function handleDrop(e) {
-    if (draggedItem === this) return; // if the item is dropped onto itself, do nothing
-
+    if (draggedItem === this) return;
     const bounding = this.getBoundingClientRect();
     const offset = bounding.y + (bounding.height/2);
     if (e.clientY - offset > 0) {
@@ -133,7 +105,6 @@ function handleDrop(e) {
     } else {
         this.parentNode.insertBefore(draggedItem, this);
     }
-
     saveTodos();
 }
 
@@ -141,7 +112,6 @@ function handleDragEnd(e) {
     draggedItem = null;
 }
 
-// Context menu code
 var contextMenu = document.getElementById('contextMenu');
 var currentItem = null;
 
@@ -206,15 +176,12 @@ function populateCalendar(month) {
     const monthDays = document.getElementById('monthDays');
     const currentMonthDiv = document.getElementById('currentMonth');
 
-    // Clear existing entries:
     monthDays.innerHTML = '';
 
-    // Populate month name:
     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"];
     currentMonthDiv.innerText = `${monthNames[month.getMonth()]} ${month.getFullYear()}`;
 
-    // Get start day of the month:
     let day = firstDay.getDay();
 
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -226,9 +193,8 @@ function populateCalendar(month) {
     });
     monthDays.appendChild(daysHeaderRow);
     
-    // Generate days:
     let weekRow = document.createElement('tr');
-    for (let i = 0; i < day; i++) {  // Fill in the blanks before the first day
+    for (let i = 0; i < day; i++) {
         weekRow.appendChild(document.createElement('td'));
     }
 
@@ -245,69 +211,183 @@ function populateCalendar(month) {
         day++;
     }
 
-    monthDays.appendChild(weekRow);  // Append the last week
+    monthDays.appendChild(weekRow);
 }
 
-function fetchNBAGames() {
-    const herokuServerUrl = 'https://tranquil-woodland-32815-0cb6fc0e7a3b.herokuapp.com/';
-  
-    fetch(herokuServerUrl)
-      .then(response => response.json())
-      .then(data => displayNBAGames(data.data))
-      .catch(error => console.error('Error fetching NBA games:', error));
-  }
+document.getElementById('wrapThisUpButton').addEventListener('click', wrapThisUp);
 
+function displayWrappedSessions() {
+    const container = document.getElementById('wrappedSessions');
+    container.innerHTML = '';
 
-
-function displayNBAGames(games) {
-    const gamesList = document.getElementById('nbaGamesList');
-    gamesList.innerHTML = ''; // Clear previous entries
-
-    games.forEach(game => {
-        const listItem = document.createElement('li');
-        listItem.className = 'game-item'; // Add a class for styling
-        
-        const homeTeamSpan = document.createElement('span');
-        homeTeamSpan.className = 'team home-team';
-        const homeTeam = game.home_team.full_name.split(' ').pop(); // Simplifying team name
-        homeTeamSpan.textContent = homeTeam;
-
-        const vsSpan = document.createElement('span');
-        vsSpan.textContent = 'vs.';
-        vsSpan.className = 'vs-text'; // Add a class for styling
-
-        const visitorTeamSpan = document.createElement('span');
-        visitorTeamSpan.className = 'team visitor-team';
-        const visitorTeam = game.visitor_team.full_name.split(' ').pop(); // Simplifying team name
-        visitorTeamSpan.textContent = visitorTeam;
-
-        // Append the spans to the list item
-        listItem.appendChild(homeTeamSpan);
-        listItem.appendChild(vsSpan);
-        listItem.appendChild(visitorTeamSpan);
-
-        // Check if the game is live and update status accordingly
-        let gameStatus = ''; // Default to empty string
-        if (game.status === 'Scheduled') {
-            // For scheduled games, don't display any status
-        } else if (game.status.includes('Quarter')) {
-            // If the status includes 'Quarter', extract it
-            gameStatus = ` - ${game.status}`;
-        }
-        
-        // Create a span for the game status if it's live
-        if (gameStatus !== '') {
-            const statusSpan = document.createElement('span');
-            statusSpan.className = 'game-status';
-            statusSpan.textContent = gameStatus;
-            listItem.appendChild(statusSpan);
-        }
-
-        gamesList.appendChild(listItem);
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const wrappedSessions = data.wrappedSessions || [];
+        wrappedSessions.forEach((session, index) => {
+            const sessionElement = document.createElement('div');
+            sessionElement.className = 'wrapped-session';
+            sessionElement.innerHTML = `
+                <div class="session-actions">
+                    <button class="session-action view">view</button>
+                    <button class="session-action edit">edit</button>
+                    <button class="session-action delete">delete</button>
+                </div>
+                <img src="icons.png" alt="Folder">
+                <span title="${session.name}">${session.name}</span>
+            `;
+            sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
+            sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
+            sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
+            sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
+            container.appendChild(sessionElement);
+        });
     });
 }
 
+function viewWrappedSession(event, index) {
+    event.stopPropagation();
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const session = data.wrappedSessions[index];
+        let links = session.tabs.map(tab => `<li><a href="${tab.url}" target="_blank">${tab.title}</a></li>`).join('');
+        const viewWindow = window.open('', '_blank', 'width=400,height=600');
+        viewWindow.document.write(`
+            <html>
+                <head>
+                    <title>View Session</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        ul { list-style-type: none; padding: 0; }
+                        li { margin: 10px 0; }
+                        a { text-decoration: none; color: #000; }
+                        a:hover { text-decoration: underline; }
+                    </style>
+                </head>
+                <body>
+                    <h2>${session.name}</h2>
+                    <ul>${links}</ul>
+                </body>
+            </html>
+        `);
+        viewWindow.document.close();
+    });
+}
 
+function displayWrappedSessions() {
+    const container = document.getElementById('wrappedSessions');
+    container.innerHTML = '';
+
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const wrappedSessions = data.wrappedSessions || [];
+        wrappedSessions.forEach((session, index) => {
+            const sessionElement = document.createElement('div');
+            sessionElement.className = 'wrapped-session';
+            sessionElement.innerHTML = `
+                <div class="session-actions">
+                    <button class="session-action view">view</button>
+                    <button class="session-action edit">edit</button>
+                    <button class="session-action delete">delete</button>
+                </div>
+                <img src="icons.png" alt="Folder">
+                <span title="${session.name}">${session.name}</span>
+            `;
+            sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
+            sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
+            sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
+            sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
+            container.appendChild(sessionElement);
+        });
+    });
+}
+
+function viewWrappedSession(event, index) {
+    event.stopPropagation();
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const session = data.wrappedSessions[index];
+        let links = session.tabs.map(tab => `<li><a href="${tab.url}" target="_blank">${tab.title}</a></li>`).join('');
+        const viewWindow = window.open('', '_blank', 'width=400,height=600');
+        viewWindow.document.write(`
+            <html>
+                <head>
+                    <title>View Session</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        ul { list-style-type: none; padding: 0; }
+                        li { margin: 10px 0; }
+                        a { text-decoration: none; color: #000; }
+                        a:hover { text-decoration: underline; }
+                    </style>
+                </head>
+                <body>
+                    <h2>${session.name}</h2>
+                    <ul>${links}</ul>
+                </body>
+            </html>
+        `);
+        viewWindow.document.close();
+    });
+}
+
+function wrapThisUp() {
+    chrome.tabs.query({}, function(tabs) {
+        const sessionName = prompt("enter a name for this session:");
+        if (sessionName) {
+            const session = {
+                name: sessionName,
+                tabs: tabs.map(tab => ({ url: tab.url, title: tab.title })),
+                timestamp: new Date().toISOString()
+            };
+
+            chrome.storage.local.get('wrappedSessions', function(data) {
+                const wrappedSessions = data.wrappedSessions || [];
+                wrappedSessions.push(session);
+                chrome.storage.local.set({ wrappedSessions: wrappedSessions }, function() {
+                    displayWrappedSessions();
+                });
+            });
+        }
+    });
+}
+
+function openWrappedSession(index) {
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const session = data.wrappedSessions[index];
+        session.tabs.forEach(tab => {
+            chrome.tabs.create({ url: tab.url, active: false }, function(newTab) {
+                if (chrome.runtime.lastError) {
+                    console.error("Error creating tab:", chrome.runtime.lastError.message);
+                } else {
+                    console.log("Tab created successfully:", newTab.id);
+                }
+            });
+        });
+    });
+}
+
+function editWrappedSession(event, index) {
+    event.stopPropagation();
+    chrome.storage.local.get('wrappedSessions', function(data) {
+        const wrappedSessions = data.wrappedSessions;
+        const newName = prompt("Enter a new name for this session:", wrappedSessions[index].name);
+        if (newName) {
+            wrappedSessions[index].name = newName;
+            chrome.storage.local.set({ wrappedSessions: wrappedSessions }, function() {
+                displayWrappedSessions();
+            });
+        }
+    });
+}
+
+function deleteWrappedSession(event, index) {
+    event.stopPropagation();
+    if (confirm("Are you sure you want to delete this wrapped session?")) {
+        chrome.storage.local.get('wrappedSessions', function(data) {
+            const wrappedSessions = data.wrappedSessions;
+            wrappedSessions.splice(index, 1);
+            chrome.storage.local.set({ wrappedSessions: wrappedSessions }, function() {
+                displayWrappedSessions();
+            });
+        });
+    }
+}
 
 
 
@@ -322,13 +402,8 @@ document.getElementById('nextMonth').addEventListener('click', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    fetchNBAGames(); // Initial call to fetch games
-    setInterval(fetchNBAGames, 300000); // Fetch games every 5 minutes (300000 milliseconds)
+    loadTodos();
+    loadImage();
+    populateCalendar(currentMonth);
+    displayWrappedSessions();
 });
-
-
-
-
-populateCalendar(currentMonth);
-loadTodos();
-loadImage();

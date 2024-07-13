@@ -21,35 +21,36 @@
         }
     
         h2 {
-            margin-bottom: 5px; /* Reduced margin below the "todo" title */
+            margin-bottom: 5px;
         }
     
         #newTodo {
-            margin-right: 10px; /* Increased margin to the right of the input bar */
+            margin-right: 10px;
         }
     
         #tabImage {
-            width: 300px; /* This sets the width to 300 pixels */
+            width: 300px;
             display: block;
-            margin-top: -100px; /* Adjust this value to move the image down */
-            position: fixed; /* This makes the image stay in the same place on the screen */
-            left: 50%; /* This centers the image horizontally */
-            transform: translateX(-50%); /* This ensures the center of the image is in the center of the screen */
-            top: 200px; /* Adjust this value to move the image down from the top */
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 150px;
         }
         
         #todoList {
-            margin-bottom: 20px; /* Provide space between the todo list and whatever is below */
-            padding: 5px; /* Add some padding inside the box */
+            margin-bottom: 20px;
+            padding: 5px;
             margin-left: 20px;
         }
     
         #calendar {
+            position: absolute;
             font-family: Arial, sans-serif;
             width: 230px;
             padding: 10px;
-            margin: 20px auto;  /* Centering the calendar */
-            margin-top: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 500px;
         }
     
         .month-navigation {
@@ -83,7 +84,7 @@
         }
     
         #monthDays td, #monthDays th {
-            border: 1px solid #000;  /* single line black border */
+            border: 1px solid #000;
             padding: 5px;
             text-align: center;
         }
@@ -93,44 +94,90 @@
         }
     
         #monthDays tr:hover td {
-            background-color: #f5f5f5;  /* light gray hover effect for a slight touch of interactivity */
+            background-color: #f5f5f5;
         }
-        
-        #gamesContainer {
-            text-align: center; /* Center-align the container contents */
-            margin-bottom: 20px; /* Add space between the games list and the image */
-            margin-top: -250px; /* Move the games list up; adjust this value as needed */
+
+        #wrapThisUpButton {
+            position: absolute;
+            top: 430px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            border: 1px solid #000;
+            background-color: transparent;
+            color: #000;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
         }
-        
-        #nbaGamesList {
-            padding: 0;
-            list-style-type: none;
-            width: 100%; /* Set a specific width for the list */
-            max-width: 400px; /* Maximum width of the list, adjust as needed */
-            margin: auto; /* This will center the entire list in the gamesContainer */
+
+        #wrapThisUpButton:hover {
+            opacity: 0.7;
         }
-        
-        .game-item {
+
+        #wrappedSessions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
-            justify-content: space-between; /* This will align items as requested */
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: transparent;
+        }
+
+        .wrapped-session {
+            width: 80px;
+            height: 80px;
+            background-color: transparent;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 1px; /* Adjust as needed */
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
         }
-        
-        .team {
-            flex: 1; /* This allows both team names to take up equal space on both sides */
-            text-align: right; /* Right align the home team */
+
+        .wrapped-session img {
+            width: 40px;
+            height: 40px;
         }
-        
-        .team.visitor-team {
-            text-align: left; /* Left align the visitor team */
+
+        .wrapped-session span {
+            margin-top: 5px;
+            font-size: 10px;
+            text-align: center;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        
-        .vs-text {
-            flex: none; /* The "vs." text should not grow or shrink */
-            padding: 0 10px; /* Adds space around the "vs." text */
-            text-align: center; /* Center the "vs." text */
-            font-weight: bold;
+
+        .session-actions {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .wrapped-session:hover .session-actions {
+            display: flex;
+        }
+
+        .session-action {
+            background-color: transparent;
+            color: #000;
+            border: 1px solid #000;
+            border-radius: 3px;
+            padding: 2px 5px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .session-action:hover {
+            background-color: #eee;
         }
     </style>
 </head>
@@ -144,12 +191,6 @@
         <input type="text" id="newTodo" placeholder="New task...">
         <button id="addTodo">Add</button>
         
-        <div id="gamesContainer">
-            <ul id="nbaGamesList">
-                <!-- NBA games will be displayed here -->
-            </ul>
-        </div>
-        
         <img id="tabImage" src="" alt="New Tab Image">
         
         <!-- Context Menu -->
@@ -157,7 +198,8 @@
             <div class="context-menu-item" id="editItem">Edit</div>
             <div class="context-menu-item" id="deleteItem">Delete</div>
         </div>
-        
+        <button id="wrapThisUpButton">wrap</button>
+
         <div id="calendar">
             <div class="month-navigation">
                 <button id="prevMonth">&lt;</button>
@@ -169,6 +211,7 @@
             </table>
         </div>
     </div>
+    <div id="wrappedSessions"></div>
     
     <script src="newtab.js"></script>
 </body>

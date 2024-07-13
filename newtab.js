@@ -233,23 +233,11 @@ function displayWrappedSessions() {
                 </div>
                 <img src="icons.png" alt="Folder">
                 <span title="${session.name}">${session.name}</span>
-                <div class="speech-bubble">${session.name}</div>
             `;
             sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
             sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
             sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
             sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
-            
-            const folderIcon = sessionElement.querySelector('img');
-            const speechBubble = sessionElement.querySelector('.speech-bubble');
-            
-            folderIcon.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                speechBubble.style.display = 'block';
-                setTimeout(() => {
-                    speechBubble.style.display = 'none';
-                }, 3000); // Hide after 3 seconds
-            });
             
             container.appendChild(sessionElement);
         });
@@ -265,9 +253,10 @@ function viewWrappedSession(event, index) {
         viewWindow.document.write(`
             <html>
                 <head>
-                    <title>View Session</title>
+                    <title>View Session: ${session.name}</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 20px; }
+                        h1 { text-align: center; margin-bottom: 20px; }
                         ul { list-style-type: none; padding: 0; }
                         li { margin: 10px 0; }
                         a { text-decoration: none; color: #000; }
@@ -275,7 +264,7 @@ function viewWrappedSession(event, index) {
                     </style>
                 </head>
                 <body>
-                    <h2>${session.name}</h2>
+                    <h1>${session.name}</h1>
                     <ul>${links}</ul>
                 </body>
             </html>

@@ -179,6 +179,31 @@
         .session-action:hover {
             background-color: #eee;
         }
+
+        .speech-bubble {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 5px;
+            max-width: 200px;
+            word-wrap: break-word;
+            z-index: 1000;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #000 transparent transparent transparent;
+        }
     </style>
 </head>
 <body>

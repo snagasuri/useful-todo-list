@@ -233,11 +233,24 @@ function displayWrappedSessions() {
                 </div>
                 <img src="icons.png" alt="Folder">
                 <span title="${session.name}">${session.name}</span>
+                <div class="speech-bubble">${session.name}</div>
             `;
             sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
             sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
             sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
             sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
+            
+            const folderIcon = sessionElement.querySelector('img');
+            const speechBubble = sessionElement.querySelector('.speech-bubble');
+            
+            folderIcon.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                speechBubble.style.display = 'block';
+                setTimeout(() => {
+                    speechBubble.style.display = 'none';
+                }, 3000); // Hide after 3 seconds
+            });
+            
             container.appendChild(sessionElement);
         });
     });

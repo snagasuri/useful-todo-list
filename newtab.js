@@ -265,7 +265,7 @@ function viewWrappedSession(event, index) {
                 </head>
                 <body>
                     <h1>${session.name}</h1>
-                    <ul>${links}</ul>
+                      <ul>${links}</ul>
                 </body>
             </html>
         `);

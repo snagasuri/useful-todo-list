@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "To-Do List",
+  "name": "finally",
   "version": "1.0",
   "description": "Simple to-do list extension that replaces the new tab page",
-  "permissions": ["storage", "sync", "https://www.balldontlie.io/*"],
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   }

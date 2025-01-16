@@ -412,31 +412,57 @@ document.addEventListener('DOMContentLoaded', function() {
     populateCalendar(currentMonth);
     displayWrappedSessions();
     
-    document.getElementById('createMemButton').addEventListener('click', createMem);
+    const memInput = document.getElementById('memInput');
+    memInput.addEventListener('keydown', handleMemInput);
+    memInput.addEventListener('input', formatMarkdown);
 });
 
-async function createMem() {
-    const content = prompt("Enter your mem content:");
-    if (!content) return;
-
-    try {
-        const response = await fetch('https://api.mem.ai/v0/mems', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `ApiAccessToken ${API_ACCESS_TOKEN}`
-            },
-            body: JSON.stringify({ content })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+function formatMarkdown(event) {
+    const textarea = event.target;
+    const cursorPosition = textarea.selectionStart;
+    const text = textarea.value;
+    
+    // Format bullet points
+    const lines = text.split('\n');
+    const formattedLines = lines.map(line => {
+        if (line.trim().startsWith('- ')) {
+            return '  ' + line;
         }
+        return line;
+    });
+    
+    textarea.value = formattedLines.join('\n');
+    
+    // Restore cursor position
+    textarea.setSelectionRange(cursorPosition, cursorPosition);
+}
 
-        const result = await response.json();
-        alert('Mem created successfully!');
-    } catch (error) {
-        console.error('Error creating mem:', error);
-        alert('Failed to create mem. Check console for details.');
+async function handleMemInput(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        const content = event.target.value.trim();
+        if (!content) return;
+
+        try {
+            const response = await fetch('https://api.mem.ai/v0/mems', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `ApiAccessToken ${API_ACCESS_TOKEN}`
+                },
+                body: JSON.stringify({ content })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            alert('Mem created successfully!');
+            event.target.value = ''; // Clear the textarea after successful creation
+        } catch (error) {
+            console.error('Error creating mem:', error);
+            alert('Failed to create mem. Check console for details.');
+        }
     }
 }

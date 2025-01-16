@@ -127,6 +127,26 @@
             background-color: transparent;
         }
 
+        #memInput {
+            position: absolute;
+            top: 470px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #000;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: none;
+        }
+
+        #memInput:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
         .wrapped-session {
             width: 80px;
             height: 80px;
@@ -200,7 +220,7 @@
             <div class="context-menu-item" id="deleteItem">Delete</div>
         </div>
         <button id="wrapThisUpButton">wrap</button>
-        <button id="createMemButton">Create Mem</button>
+        <textarea id="memInput" placeholder="Enter your mem here... Use markdown formatting for a better experience."></textarea>
 
         <div id="calendar">
             <div class="month-navigation">

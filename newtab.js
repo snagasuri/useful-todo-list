@@ -403,9 +403,40 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     populateCalendar(currentMonth);
 });
 
+// Add this near the top of the file, after other imports
+const API_ACCESS_TOKEN = '<Replace this with your access token>';
+
 document.addEventListener('DOMContentLoaded', function() {
     loadTodos();
     loadImage();
     populateCalendar(currentMonth);
     displayWrappedSessions();
+    
+    document.getElementById('createMemButton').addEventListener('click', createMem);
 });
+
+async function createMem() {
+    const content = prompt("Enter your mem content:");
+    if (!content) return;
+
+    try {
+        const response = await fetch('https://api.mem.ai/v0/mems', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `ApiAccessToken ${API_ACCESS_TOKEN}`
+            },
+            body: JSON.stringify({ content })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        alert('Mem created successfully!');
+    } catch (error) {
+        console.error('Error creating mem:', error);
+        alert('Failed to create mem. Check console for details.');
+    }
+}

@@ -352,6 +352,13 @@ const API_ACCESS_TOKEN = '8d90aa50-1ffa-41ae-9fa4-2d212834c39d';
 
 let memCounter = 2; // Initialize the counter at 2
 
+// Load the counter from storage
+chrome.storage.local.get('memCounter', function(data) {
+    if (data.memCounter) {
+        memCounter = data.memCounter;
+    }
+});
+
 async function handleMemInput(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
@@ -386,6 +393,14 @@ async function handleMemInput(event) {
             }
 
             confirmationMessage.textContent = `done ${memCounter++} `;
+            
+            // Save the updated counter to storage
+            chrome.storage.local.set({ 'memCounter': memCounter }, function() {
+                if (chrome.runtime.lastError) {
+                    console.error("Error saving memCounter:", chrome.runtime.lastError.message);
+                }
+            });
+
             event.target.value = ''; // Clear the textarea after successful creation
         } catch (error) {
             console.error('Error creating mem:', error);

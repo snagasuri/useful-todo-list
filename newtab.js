@@ -403,8 +403,11 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     populateCalendar(currentMonth);
 });
 
-// Add this near the top of the file, after other imports
-const API_ACCESS_TOKEN = '<Replace this with your access token>';
+// Load environment variables
+require('dotenv').config();
+
+// Use the MEM_API_KEY from the environment variables
+const API_ACCESS_TOKEN = process.env.MEM_API_KEY;
 
 document.addEventListener('DOMContentLoaded', function() {
     loadTodos();

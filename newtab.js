@@ -404,21 +404,11 @@ document.getElementById('nextMonth').addEventListener('click', function() {
 });
 
 // Load environment variables
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Use the MEM_API_KEY from the environment variables
 const API_ACCESS_TOKEN = process.env.MEM_API_KEY;
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadTodos();
-    loadImage();
-    populateCalendar(currentMonth);
-    displayWrappedSessions();
-    
-    const memInput = document.getElementById('memInput');
-    memInput.addEventListener('keydown', handleMemInput);
-    memInput.addEventListener('input', formatMarkdown);
-});
 
 function formatMarkdown(event) {
     const textarea = event.target;
@@ -469,3 +459,14 @@ async function handleMemInput(event) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadTodos();
+    loadImage();
+    populateCalendar(currentMonth);
+    displayWrappedSessions();
+    
+    const memInput = document.getElementById('memInput');
+    memInput.addEventListener('keydown', handleMemInput);
+    memInput.addEventListener('input', formatMarkdown);
+});

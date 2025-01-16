@@ -350,26 +350,6 @@ document.getElementById('nextMonth').addEventListener('click', function() {
 // Use the MEM_API_KEY from the environment variables
 const API_ACCESS_TOKEN = '8d90aa50-1ffa-41ae-9fa4-2d212834c39d';
 
-function formatMarkdown(event) {
-    const textarea = event.target;
-    const cursorPosition = textarea.selectionStart;
-    const text = textarea.value;
-    
-    // Format bullet points
-    const lines = text.split('\n');
-    const formattedLines = lines.map(line => {
-        if (line.trim().startsWith('- ')) {
-            return '  ' + line;
-        }
-        return line;
-    });
-    
-    textarea.value = formattedLines.join('\n');
-    
-    // Restore cursor position
-    textarea.setSelectionRange(cursorPosition, cursorPosition);
-}
-
 async function handleMemInput(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
@@ -391,7 +371,22 @@ async function handleMemInput(event) {
             }
 
             const result = await response.json();
-            alert('Mem created successfully!');
+
+// Remove the alert
+// alert('Mem created successfully!');
+
+// Add confirmation message
+const memInput = document.getElementById('memInput');
+let confirmationMessage = document.getElementById('confirmationMessage');
+
+if (!confirmationMessage) {
+    confirmationMessage = document.createElement('div');
+    confirmationMessage.id = 'confirmationMessage';
+    confirmationMessage.style.textAlign = 'left';
+    memInput.insertAdjacentElement('afterend', confirmationMessage);
+}
+
+confirmationMessage.textContent = 'done';
             event.target.value = ''; // Clear the textarea after successful creation
         } catch (error) {
             console.error('Error creating mem:', error);
@@ -408,5 +403,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const memInput = document.getElementById('memInput');
     memInput.addEventListener('keydown', handleMemInput);
-    memInput.addEventListener('input', formatMarkdown);
 });

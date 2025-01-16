@@ -238,7 +238,6 @@ function displayWrappedSessions() {
             sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
             sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
             sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
-            
             container.appendChild(sessionElement);
         });
     });
@@ -265,61 +264,6 @@ function viewWrappedSession(event, index) {
                 </head>
                 <body>
                     <h1>${session.name}</h1>
-                      <ul>${links}</ul>
-                </body>
-            </html>
-        `);
-        viewWindow.document.close();
-    });
-}
-
-function displayWrappedSessions() {
-    const container = document.getElementById('wrappedSessions');
-    container.innerHTML = '';
-
-    chrome.storage.local.get('wrappedSessions', function(data) {
-        const wrappedSessions = data.wrappedSessions || [];
-        wrappedSessions.forEach((session, index) => {
-            const sessionElement = document.createElement('div');
-            sessionElement.className = 'wrapped-session';
-            sessionElement.innerHTML = `
-                <div class="session-actions">
-                    <button class="session-action view">view</button>
-                    <button class="session-action edit">edit</button>
-                    <button class="session-action delete">delete</button>
-                </div>
-                <img src="icons.png" alt="Folder">
-                <span title="${session.name}">${session.name}</span>
-            `;
-            sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
-            sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
-            sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
-            sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
-            container.appendChild(sessionElement);
-        });
-    });
-}
-
-function viewWrappedSession(event, index) {
-    event.stopPropagation();
-    chrome.storage.local.get('wrappedSessions', function(data) {
-        const session = data.wrappedSessions[index];
-        let links = session.tabs.map(tab => `<li><a href="${tab.url}" target="_blank">${tab.title}</a></li>`).join('');
-        const viewWindow = window.open('', '_blank', 'width=400,height=600');
-        viewWindow.document.write(`
-            <html>
-                <head>
-                    <title>View Session</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        ul { list-style-type: none; padding: 0; }
-                        li { margin: 10px 0; }
-                        a { text-decoration: none; color: #000; }
-                        a:hover { text-decoration: underline; }
-                    </style>
-                </head>
-                <body>
-                    <h2>${session.name}</h2>
                     <ul>${links}</ul>
                 </body>
             </html>
@@ -403,12 +347,8 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     populateCalendar(currentMonth);
 });
 
-// Load environment variables
-import dotenv from 'dotenv';
-dotenv.config();
-
 // Use the MEM_API_KEY from the environment variables
-const API_ACCESS_TOKEN = process.env.MEM_API_KEY;
+const API_ACCESS_TOKEN = '8d90aa50-1ffa-41ae-9fa4-2d212834c39d';
 
 function formatMarkdown(event) {
     const textarea = event.target;

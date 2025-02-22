@@ -4,6 +4,12 @@
     <title>finally</title>
     <link rel="icon" href="nerv.png" type="image/png">
     <style>
+        body {
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
         .context-menu {
             display: none;
             position: absolute;
@@ -34,7 +40,7 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            top: 150px;
+            top: 100px;
         }
         
         #todoList {
@@ -50,7 +56,7 @@
             padding: 10px;
             left: 50%;
             transform: translateX(-50%);
-            top: 500px;
+            top: 475px;
         }
     
         .month-navigation {
@@ -99,7 +105,7 @@
 
         #wrapThisUpButton {
             position: absolute;
-            top: 430px;
+            top: 400px;
             left: 50%;
             transform: translateX(-50%);
             padding: 5px 10px;
@@ -116,20 +122,21 @@
         }
 
         #wrappedSessions {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 10px;
-            background-color: transparent;
-        }
+    position: fixed;
+    top: 50%;
+    right: 50px; /* adjust as needed for spacing from the right edge */
+    transform: translateY(-50%);
+    display: grid;
+    grid-template-columns: repeat(3, 80px); /* 3 columns with each cell 80px wide */
+    gap: 10px;
+    padding: 10px;
+    background-color: transparent;
+}
+
 
         #memInput {
             position: absolute;
-            top: 390px;
+            top: 370px;
             left: 24%;
             transform: translateX(-50%);
             width: 300px;
@@ -211,6 +218,8 @@
         
         <input type="text" id="newTodo" placeholder="New task...">
         <button id="addTodo">Add</button>
+
+        <div id="nbaGames"></div>
         
         <img id="tabImage" src="" alt="New Tab Image">
         
@@ -220,7 +229,7 @@
             <div class="context-menu-item" id="deleteItem">Delete</div>
         </div>
         <button id="wrapThisUpButton">wrap</button>
-        <textarea id="memInput" placeholder="Enter your mem here... Use markdown formatting for a better experience."></textarea>
+        <textarea id="memInput" placeholder=""></textarea>
 
         <div id="calendar">
             <div class="month-navigation">

@@ -238,7 +238,6 @@ function displayWrappedSessions() {
             sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
             sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
             sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
-            
             container.appendChild(sessionElement);
         });
     });
@@ -265,61 +264,6 @@ function viewWrappedSession(event, index) {
                 </head>
                 <body>
                     <h1>${session.name}</h1>
-                      <ul>${links}</ul>
-                </body>
-            </html>
-        `);
-        viewWindow.document.close();
-    });
-}
-
-function displayWrappedSessions() {
-    const container = document.getElementById('wrappedSessions');
-    container.innerHTML = '';
-
-    chrome.storage.local.get('wrappedSessions', function(data) {
-        const wrappedSessions = data.wrappedSessions || [];
-        wrappedSessions.forEach((session, index) => {
-            const sessionElement = document.createElement('div');
-            sessionElement.className = 'wrapped-session';
-            sessionElement.innerHTML = `
-                <div class="session-actions">
-                    <button class="session-action view">view</button>
-                    <button class="session-action edit">edit</button>
-                    <button class="session-action delete">delete</button>
-                </div>
-                <img src="icons.png" alt="Folder">
-                <span title="${session.name}">${session.name}</span>
-            `;
-            sessionElement.querySelector('img').addEventListener('click', () => openWrappedSession(index));
-            sessionElement.querySelector('.view').addEventListener('click', (e) => viewWrappedSession(e, index));
-            sessionElement.querySelector('.edit').addEventListener('click', (e) => editWrappedSession(e, index));
-            sessionElement.querySelector('.delete').addEventListener('click', (e) => deleteWrappedSession(e, index));
-            container.appendChild(sessionElement);
-        });
-    });
-}
-
-function viewWrappedSession(event, index) {
-    event.stopPropagation();
-    chrome.storage.local.get('wrappedSessions', function(data) {
-        const session = data.wrappedSessions[index];
-        let links = session.tabs.map(tab => `<li><a href="${tab.url}" target="_blank">${tab.title}</a></li>`).join('');
-        const viewWindow = window.open('', '_blank', 'width=400,height=600');
-        viewWindow.document.write(`
-            <html>
-                <head>
-                    <title>View Session</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        ul { list-style-type: none; padding: 0; }
-                        li { margin: 10px 0; }
-                        a { text-decoration: none; color: #000; }
-                        a:hover { text-decoration: underline; }
-                    </style>
-                </head>
-                <body>
-                    <h2>${session.name}</h2>
                     <ul>${links}</ul>
                 </body>
             </html>
@@ -391,8 +335,6 @@ function deleteWrappedSession(event, index) {
     }
 }
 
-
-
 document.getElementById('prevMonth').addEventListener('click', function() {
     currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
     populateCalendar(currentMonth);
@@ -403,9 +345,181 @@ document.getElementById('nextMonth').addEventListener('click', function() {
     populateCalendar(currentMonth);
 });
 
+const API_ACCESS_TOKEN = '8d90aa50-1ffa-41ae-9fa4-2d212834c39d';
+
+let memCounter = 2;
+
+chrome.storage.local.get('memCounter', function(data) {
+    if (data.memCounter) {
+        memCounter = data.memCounter;
+    }
+});
+
+async function handleMemInput(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        const content = event.target.value.trim();
+        if (!content) return;
+
+        try {
+            const response = await fetch('https://api.mem.ai/v0/mems', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `ApiAccessToken ${API_ACCESS_TOKEN}`
+                },
+                body: JSON.stringify({ content })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            const memInput = document.getElementById('memInput');
+            let confirmationMessage = document.getElementById('confirmationMessage');
+
+            if (!confirmationMessage) {
+                confirmationMessage = document.createElement('div');
+                confirmationMessage.id = 'confirmationMessage';
+                confirmationMessage.style.textAlign = 'left';
+                memInput.insertAdjacentElement('afterend', confirmationMessage);
+            }
+
+            confirmationMessage.textContent = `done ${memCounter++} `;
+            
+            chrome.storage.local.set({ 'memCounter': memCounter }, function() {
+                if (chrome.runtime.lastError) {
+                    console.error("Error saving memCounter:", chrome.runtime.lastError.message);
+                }
+            });
+
+            event.target.value = '';
+        } catch (error) {
+            console.error('Error creating mem:', error);
+            alert('Failed to create mem. Check console for details.');
+        }
+    }
+}
+
+const teamNames = {
+    'ATL': 'hawks', 'BOS': 'celtics', 'BKN': 'nets', 'CHA': 'hornets',
+    'CHI': 'bulls', 'CLE': 'cavaliers', 'DAL': 'mavericks', 'DEN': 'nuggets',
+    'DET': 'pistons', 'GSW': 'warriors', 'HOU': 'rockets', 'IND': 'pacers',
+    'LAC': 'clippers', 'LAL': 'lakers', 'MEM': 'grizzlies', 'MIA': 'heat',
+    'MIL': 'bucks', 'MIN': 'timberwolves', 'NOP': 'pelicans', 'NYK': 'knicks',
+    'OKC': 'thunder', 'ORL': 'magic', 'PHI': '76ers', 'PHX': 'suns',
+    'POR': 'blazers', 'SAC': 'kings', 'SAS': 'spurs', 'TOR': 'raptors',
+    'UTA': 'jazz', 'WAS': 'wizards'
+};
+
+function formatGameTime(dateStr) {
+    const date = new Date(dateStr);
+    const pstDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+    let hours = pstDate.getHours();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}${ampm}`;
+}
+
+async function fetchNBAGames() {
+    const gamesContainer = document.getElementById('nbaGames');
+    gamesContainer.innerHTML = '';
+    Object.assign(gamesContainer.style, {
+        position: 'fixed',
+        width: '50%',
+        left: '25%',
+        top: '20px',
+        height: '30px',
+        overflow: 'hidden',
+        background: 'linear-gradient(to right, #f8f9fa, #ffffff, #f8f9fa)',
+        borderRadius: '15px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        zIndex: '1000'
+    });
+
+    try {
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        
+        const response = await fetch(`https://api.balldontlie.io/v1/games?dates[]=${dateStr}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'dd1b780a-32c4-411d-90e1-1befe56aabe0',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('API response:', data);
+
+        if (data.data && data.data.length > 0) {
+            const scrollContainer = document.createElement('div');
+            Object.assign(scrollContainer.style, {
+                whiteSpace: 'nowrap',
+                position: 'absolute',
+                animation: 'scroll 20s linear infinite',
+                fontSize: '16px',
+                fontFamily: 'Arial, sans-serif',
+                padding: '5px 20px',
+                color: '#333',
+                letterSpacing: '0.2px',
+                width: 'max-content',
+                left: '0'
+            });
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes scroll {
+                    0% { transform: translateX(20%); }
+                    100% { transform: translateX(-100%); }
+                }
+                #nbaGames:hover .scrolling-text {
+                    animation-play-state: paused;
+                }
+                .scrolling-text {
+                    transition: transform 0.3s ease-out;
+                }
+            `;
+            document.head.appendChild(style);
+
+            const gameTexts = data.data.map(game => {
+                const visitorTeam = teamNames[game.visitor_team.abbreviation].toLowerCase();
+                const homeTeam = teamNames[game.home_team.abbreviation].toLowerCase();
+                const time = formatGameTime(game.datetime);
+                return `${visitorTeam} v. ${homeTeam} ${time}`;
+            });
+
+            scrollContainer.className = 'scrolling-text';
+            // Create a continuous loop with less spacing between games
+            const allGames = [...gameTexts, ...gameTexts, ...gameTexts].join('     •     ');
+            scrollContainer.textContent = allGames;
+            gamesContainer.appendChild(scrollContainer);
+        } else {
+            gamesContainer.textContent = 'No NBA games today';
+        }
+    } catch (error) {
+        console.error('Error fetching NBA games:', error);
+        gamesContainer.textContent = 'Error loading NBA games';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     loadTodos();
     loadImage();
     populateCalendar(currentMonth);
     displayWrappedSessions();
+    
+    setTimeout(() => {
+        fetchNBAGames();
+    }, 1000);
+    
+    const memInput = document.getElementById('memInput');
+    memInput.addEventListener('keydown', handleMemInput);
 });
